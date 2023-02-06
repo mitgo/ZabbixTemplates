@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>6.0</version>
+    <date>2023-02-06T05:37:19Z</date>
+    <groups>
+        <group>
+            <uuid>0e60ac85bc3941e2a1d66a048ff164da</uuid>
+            <name>UPS</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <uuid>532dbbc718af4327bcd70bcf6291b237</uuid>
+            <template>EATON UPS</template>
+            <name>EATON UPS</name>
+            <groups>
+                <group>
+                    <name>UPS</name>
+                </group>
+            </groups>
+            <items>
+                <item>
+                    <uuid>5a0b392550a446da9e58b95bd4c3fbe8</uuid>
+                    <name>BateryChargerFault</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>1.3.6.1.4.1.705.1.5.15.0</snmp_oid>
+                    <key>batery.chargerfault</key>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <description>2 - no, 1 -yes</description>
+                    <preprocessing>
+                        <step>
+                            <type>REGEX</type>
+                            <parameters>
+                                <parameter>1</parameter>
+                                <parameter>Сбой заряда</parameter>
+                            </parameters>
+                        </step>
+                        <step>
+                            <type>REGEX</type>
+                            <parameters>
+                                <parameter>2</parameter>
+                                <parameter>Норма</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <uuid>0eb1e582916d4968abb8c73c6aad6b0b</uuid>
+                    <name>BateryLevel</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>1.3.6.1.4.1.705.1.5.2.0</snmp_oid>
+                    <key>batery.level</key>
+                    <units>%</units>
+                </item>
+                <item>
+                    <uuid>fd71241e721e4dc2951e6ac933e5b824</uuid>
+                    <name>BateryLow</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>1.3.6.1.4.1.705.1.5.14.0</snmp_oid>
+                    <key>batery.Low</key>
+                    <delay>1h</delay>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <description>2 - no, 1 -yes</description>
+                    <preprocessing>
+                        <step>
+                            <type>REGEX</type>
+                            <parameters>
+                                <parameter>1</parameter>
+                                <parameter>Низкий уровень заряда</parameter>
+                            </parameters>
+                        </step>
+                        <step>
+                            <type>STR_REPLACE</type>
+                            <parameters>
+                                <parameter>2</parameter>
+                                <parameter>Норма</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <triggers>
+                        <trigger>
+                            <uuid>09058db65d194ee888a56603c2d0c7b2</uuid>
+                            <expression>last(/EATON UPS/batery.Low,#5)=1</expression>
+                            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                            <recovery_expression>last(/EATON UPS/batery.Low,#5)=2</recovery_expression>
+                            <name>LowBattery</name>
+                            <priority>WARNING</priority>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <uuid>a1f85542c09448c4bb588278faae49c2</uuid>
+                    <name>BateryReplace</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>1.3.6.1.4.1.705.1.5.11.0</snmp_oid>
+                    <key>batery.replace</key>
+                    <delay>1h</delay>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <description>2 - no, 1 -yes</description>
+                    <preprocessing>
+                        <step>
+                            <type>STR_REPLACE</type>
+                            <parameters>
+                                <parameter>1</parameter>
+                                <parameter>Требуется замена</parameter>
+                            </parameters>
+                        </step>
+                        <step>
+                            <type>REGEX</type>
+                            <parameters>
+                                <parameter>2</parameter>
+                                <parameter>Норма</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <triggers>
+                        <trigger>
+                            <uuid>0508cedfb8b943a59ac6a0f50ec639fa</uuid>
+                            <expression>last(/EATON UPS/batery.replace,#3)=1</expression>
+                            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                            <recovery_expression>last(/EATON UPS/batery.replace,#2)=2</recovery_expression>
+                            <name>BatteryBad</name>
+                            <priority>HIGH</priority>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <uuid>d8fdfcf20ecd41f99ae93f02261043e8</uuid>
+                    <name>BateryVoltage</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>1.3.6.1.4.1.705.1.5.5.0</snmp_oid>
+                    <key>batery.voltage</key>
+                    <value_type>FLOAT</value_type>
+                    <units>V</units>
+                    <preprocessing>
+                        <step>
+                            <type>MULTIPLIER</type>
+                            <parameters>
+                                <parameter>0.1</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <uuid>00ca9360fce84de3bab0d199fb417e4a</uuid>
+                    <name>InputVoltage</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>1.3.6.1.4.1.534.1.3.4.1.2.1</snmp_oid>
+                    <key>input.voltage</key>
+                    <units>V</units>
+                    <triggers>
+                        <trigger>
+                            <uuid>d87e9e59656a4f04b9f35e6c2f67e28a</uuid>
+                            <expression>last(/EATON UPS/input.voltage,#2)&lt;=50</expression>
+                            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                            <recovery_expression>last(/EATON UPS/input.voltage,#3)&gt;=200</recovery_expression>
+                            <name>LostInput</name>
+                            <priority>AVERAGE</priority>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <uuid>9bb7f6dc4ee54017a5045a1af62044d9</uuid>
+                    <name>Manufacturer</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>1.3.6.1.2.1.33.1.1.1.0</snmp_oid>
+                    <key>manufacturer.name</key>
+                    <delay>1d</delay>
+                    <history>0</history>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                </item>
+                <item>
+                    <uuid>c5426b45d28b482481ad32b9db940354</uuid>
+                    <name>OutputOnBattery</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>1.3.6.1.4.1.705.1.7.3.0</snmp_oid>
+                    <key>output.onbattery</key>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <description>1 - yes, 2 - no</description>
+                    <preprocessing>
+                        <step>
+                            <type>REGEX</type>
+                            <parameters>
+                                <parameter>1</parameter>
+                                <parameter>На батарее</parameter>
+                            </parameters>
+                        </step>
+                        <step>
+                            <type>REGEX</type>
+                            <parameters>
+                                <parameter>2</parameter>
+                                <parameter>От сети</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <triggers>
+                        <trigger>
+                            <uuid>9d15a6972ea74a1785d3be66a0d01c17</uuid>
+                            <expression>last(/EATON UPS/output.onbattery,#3)=1</expression>
+                            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                            <recovery_expression>last(/EATON UPS/output.onbattery,#2)=2</recovery_expression>
+                            <name>OutputOnBattery</name>
+                            <priority>AVERAGE</priority>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <uuid>85e2458a1f48429a930d1a8b42c76689</uuid>
+                    <name>OutputOverload</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>1.3.6.1.4.1.705.1.7.10.0</snmp_oid>
+                    <key>output.overload</key>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <description>1 - yes, 2 - no</description>
+                    <preprocessing>
+                        <step>
+                            <type>STR_REPLACE</type>
+                            <parameters>
+                                <parameter>1</parameter>
+                                <parameter>Перегруз</parameter>
+                            </parameters>
+                        </step>
+                        <step>
+                            <type>STR_REPLACE</type>
+                            <parameters>
+                                <parameter>2</parameter>
+                                <parameter>Норма</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <triggers>
+                        <trigger>
+                            <uuid>f8db2a3116e74405921a1ab8eb1ec0f7</uuid>
+                            <expression>last(/EATON UPS/output.overload,#3)=1</expression>
+                            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                            <recovery_expression>last(/EATON UPS/output.overload,#2)=2</recovery_expression>
+                            <name>OutputOverload</name>
+                            <priority>HIGH</priority>
+                        </trigger>
+                    </triggers>
+                </item>
+            </items>
+        </template>
+    </templates>
+</zabbix_export>
